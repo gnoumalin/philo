@@ -16,9 +16,18 @@ void eating(t_philo *philo)
     pthread_mutex_unlock(&philo->data->forks[philo->right_fork->fork_id].fork);
 }
 
-void thinking(t_philo *philo)
+void thinking(t_philo *philo, bool desync)
 {
-    write_status(THINKING, philo);
+    long t_think;
+    
+    if (!desync)
+        write_status(THINKING, philo);
+    if (philo->data->philo_nbr % 2)
+        return ;
+    t_think = (philo->data->time_to_eat * 2) - philo->data->time_to_sleep;
+    if (t_think < 0)
+        t_think = 0;
+    precise_sleep(t_think * 0.4, philo->data);
 }
 
 void sleeping(t_philo *philo)

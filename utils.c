@@ -56,8 +56,8 @@ void precise_sleep(long time ,t_data *data)
             break ;
         elapsed_time = get_current_time(MICROSECOND) - start_time;
         remaining_time = time - elapsed_time;
-        if (remaining_time > 1e3)
-            usleep(time / 2);
+        if (remaining_time > 1e4)
+            usleep(remaining_time / 2);
         else
         {
             while (get_current_time(MICROSECOND) - start_time < time)

@@ -63,7 +63,7 @@ typedef enum e_philo_status
 }	t_philo_status;
 
 void *philo_routine(void *arg);
-int	init_data(t_data *data, int argc, char **argv);
+void	init_data(t_data *data, int argc, char **argv);
 long ft_atol(const char *str);
 long	get_current_time(t_time_code code);
 int philo(t_data *data);
@@ -77,8 +77,16 @@ void wait_all_threads(t_data *data);
 void precise_sleep(long time ,t_data *data);
 void write_status(t_philo_status status, t_philo *philo);
 void eating(t_philo *philo);
-void thinking(t_philo *philo);
+void thinking(t_philo *philo, bool desync);
 void sleeping(t_philo *philo);
 void *monitor_routine(void *arg);
-
+void clear_data(t_data *data);
+int init_parsing(int argc, char **argv);
+void take_forks(t_philo *philo, t_fork *forks, int position);
+void desync(t_philo *philo);
+void one_philo(t_data *data);
+int check_max_values(int argc, char **argv);
+int check_numeric(int argc, char **argv);
+int check_negative(int argc, char **argv);
+bool ft_isdigit(int c);
 #endif

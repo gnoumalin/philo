@@ -6,6 +6,8 @@ void *monitor_routine(void *arg)
     int i;
 
     data = (t_data *)arg;
+    while (get_bool(&data->data_mutex, &data->sync) == false)
+        usleep(1000);
     while (!simulation_finished(data))
     {
         i = 0;

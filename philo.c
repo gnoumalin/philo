@@ -1,6 +1,6 @@
 #include "philo.h"
 
-int	init_data(t_data *data, int argc, char **argv)
+void	init_data(t_data *data, int argc, char **argv)
 {
 	pthread_mutex_init(&data->data_mutex, NULL);
 	pthread_mutex_init(&data->print_mutex, NULL);
@@ -11,16 +11,9 @@ int	init_data(t_data *data, int argc, char **argv)
 	data->end = false;
 	data->sync = false;
 	if (argc == 6)
-	{	
 		data->meals_limit = ft_atol(argv[5]);
-		if (data->meals_limit <= 0)
-			return (1);
-	}
 	else
 		data->meals_limit = -1;
-	if (data->philo_nbr < 2)
-		return (1);
-	return (0);
 }
 
 void one_philo(t_data *data)
@@ -35,6 +28,8 @@ void *philo_routine(void *arg)
 	t_philo *philo = (t_philo *)arg;
 
 	wait_all_threads(philo->data);
+	//desync(philo);
+	set_long(&philo->mutex, &philo->data->start_time, get_current_time(MILLISECOND));
 	set_long(&philo->mutex, &philo->last_meal, get_current_time(MILLISECOND));
 	while (!simulation_finished(philo->data))
 	{
@@ -44,7 +39,7 @@ void *philo_routine(void *arg)
 		sleeping(philo);
 		write_status(SLEEPING, philo);
 		precise_sleep(philo->data->time_to_sleep, philo->data);
-		thinking(philo);
+		thinking(philo, false);
 	}
 	return NULL;
 }
@@ -60,6 +55,20 @@ void take_forks(t_philo *philo, t_fork *forks, int position)
 	{
 		philo->left_fork = &forks[position];
 		philo->right_fork = &forks[(position + 1) % nb_philo];
+	}
+}
+
+void desync(t_philo *philo)
+{
+	if (philo->data->philo_nbr % 2)
+	{
+		if (philo->id % 2)
+			precise_sleep(3e4, philo->data);
+	}
+	else
+	{
+		if (philo->id % 2)
+			thinking(philo, true);
 	}
 }
 
@@ -90,6 +99,7 @@ int philo(t_data *data)
 	while (i < data->philo_nbr)
 	{
 		data->philos[i].data = data;
+		set_long(&data->philos[i].mutex, &data->philos[i].last_meal, get_current_time(MILLISECOND));
 		data->philos[i].id = i + 1;
 		data->sync = false;
 		data->philos[i].meals_counter = 0;
@@ -117,14 +127,10 @@ int philo(t_data *data)
 int main(int argc, char **argv)
 {
 	t_data data;
-	
-	if (argc != 5 && argc != 6)
-	{
-		printf("Error: wrong number of arguments\n");
+	if (init_parsing(argc, argv) == 1)
 		return (1);
-	}
-	if (init_data(&data, argc, argv))
-		return (1);
+	init_data(&data, argc, argv);
 	if (philo(&data))
 		return (1);
+	clear_data(&data);
 }
