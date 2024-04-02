@@ -4,7 +4,7 @@ void write_status(t_philo_status status, t_philo *philo)
 {
     long   current_time;
     
-    current_time = get_current_time(MILLISECOND) - philo->data->start_time;
+    current_time = get_current_time(MILLISECOND) - get_long(&philo->data->data_mutex, &philo->data->start_time);
     pthread_mutex_lock(&philo->data->print_mutex);
     if ((status == TAKE_FIRST_FORK || status == TAKE_SECOND_FORK) && !simulation_finished(philo->data))
         printf("%ld %d has taken a fork\n", current_time, philo->id); 

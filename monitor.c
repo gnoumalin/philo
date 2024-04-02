@@ -1,13 +1,20 @@
 #include "philo.h"
 
+bool all_threads_active(t_data *data)
+{
+	return (get_long(&data->data_mutex, &data->philo_ready) == get_long(&data->data_mutex, &data->philo_nbr));
+}
+
 void *monitor_routine(void *arg)
 {
     t_data *data;
     int i;
+	int j;
 
+	j = 0;
     data = (t_data *)arg;
-    while (get_bool(&data->data_mutex, &data->sync) == false)
-        usleep(1000);
+    while (!all_threads_active(data))
+		;
     while (!simulation_finished(data))
     {
         i = 0;
@@ -16,7 +23,7 @@ void *monitor_routine(void *arg)
             if (is_philo_dead(&data->philos[i]))
             {
                 set_bool(&data->data_mutex, &data->end, true);
-                write_status(DEAD, &data->philos[i]);
+				write_status(DEAD, &data->philos[i]);
             }
             i++;
         }

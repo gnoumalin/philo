@@ -34,6 +34,7 @@ typedef struct s_data
 	long	time_to_die;
 	long	time_to_eat;
 	long	time_to_sleep;
+	long	philo_ready;
 	long meals_limit;
 	long start_time;
 	bool end;
@@ -64,6 +65,7 @@ typedef enum e_philo_status
 
 void *philo_routine(void *arg);
 void	init_data(t_data *data, int argc, char **argv);
+void philo_init(t_data *data);
 long ft_atol(const char *str);
 long	get_current_time(t_time_code code);
 int philo(t_data *data);
@@ -89,4 +91,5 @@ int check_max_values(int argc, char **argv);
 int check_numeric(int argc, char **argv);
 int check_negative(int argc, char **argv);
 bool ft_isdigit(int c);
+void simulation_start(t_data *data);
 #endif

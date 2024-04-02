@@ -34,7 +34,7 @@ long    get_long(pthread_mutex_t *mutex, long *var)
     return (value);
 }
 
-bool   is_philo_dead(t_philo *philo)
+/* bool   is_philo_dead(t_philo *philo)
 {
     long    last_meal_time;
 
@@ -44,7 +44,23 @@ bool   is_philo_dead(t_philo *philo)
     if (last_meal_time > philo->data->time_to_die / 1e3)
         return (true);
     return (false);
+} */
+
+bool	is_philo_dead(t_philo *philo)
+{
+	long	elapsed;
+	long	t_to_die;
+
+	if (get_bool(&philo->mutex, &philo->full))
+		return (false);
+	elapsed = get_current_time(MILLISECOND) - get_long(&philo->mutex,
+			&philo->last_meal);
+	t_to_die = philo->data->time_to_die / 1e3;
+	if (elapsed > t_to_die)
+		return (true);
+	return (false);
 }
+
 
 bool simulation_finished(t_data *data)
 {
